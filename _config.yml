@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-title                    : "Zunzhe Zhang / Personal Page"
+title                    : "Zunzhe Zhang's Personal Page"
 title_separator          : "-"
 name                     : &name "Zunzhe Zhang"
 description              : &description "An undergraduate at Tsinghua University"
