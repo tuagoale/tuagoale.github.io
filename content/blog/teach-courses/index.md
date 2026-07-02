@@ -38,11 +38,11 @@ On this page, you'll find some examples of the types of technical content that c
 
 Here's an example of linking to a publication:
 
-[An example preprint / working paper](/publications/preprint/)
+[Generative Control as Optimization](/publications/generative-control/)
 
 You can also link to another publication:
 
-[An example conference paper](/publications/conference-paper/)
+[Virtual Community](/publications/virtual-community/)
 
 ## Video
 
