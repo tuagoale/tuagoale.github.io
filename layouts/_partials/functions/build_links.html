@@ -1,0 +1,27 @@
+{{/*
+  Local workaround for Hugo Blox's build_links partial failing with:
+  "SetInMap: assignment to entry in nil map" under Hugo 0.162.
+
+  Keep front matter links rendering, but avoid the upstream Scratch.SetInMap
+  de-duplication path that is currently breaking the GitHub Pages build.
+*/}}
+{{ $page := .page }}
+{{ $links := slice }}
+
+{{ with $page.Params.links }}
+  {{ range . }}
+    {{ $url := .url | default "" }}
+    {{ if $url }}
+      {{ $links = $links | append (dict
+        "type" (.type | default "custom")
+        "url" $url
+        "icon" (.icon | default "hero/link")
+        "label" (.label | default .name)
+        "contexts" (.contexts | default (slice "list" "page"))
+        "rel" .rel
+      ) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $links }}
