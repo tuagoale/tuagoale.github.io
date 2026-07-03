@@ -8,11 +8,14 @@ main:
     url: /
     weight: 10
   - name: Papers
-    url: /#papers
-    weight: 11
-  - name: Experience
-    url: experience/
+    url: publications/
     weight: 20
   - name: Projects
-    url: /#projects
+    url: projects/
     weight: 30
+  - name: Blog
+    url: blog/
+    weight: 40
+  - name: Experience
+    url: experience/
+    weight: 50

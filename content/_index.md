@@ -45,24 +45,4 @@ sections:
         I am currently pursuing a B.S. in Computer Science at the Institute for Interdisciplinary Information Sciences, Tsinghua University.
     design:
       columns: '1'
-  - block: collection
-    id: papers
-    content:
-      title: Featured Publications
-      filters:
-        folders:
-          - publications
-        featured_only: true
-    design:
-      view: article-grid
-      columns: 2
-  - block: collection
-    id: projects
-    content:
-      title: Selected Projects
-      filters:
-        folders:
-          - projects
-    design:
-      view: card
 ---
