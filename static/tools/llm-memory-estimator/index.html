@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Training Memory Estimator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --accent: #0f766e;
+      --accent-2: #7c2d12;
+      --soft: #e0f2fe;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .sub {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 92px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input,
+    select {
+      width: 100%;
+      font: inherit;
+    }
+
+    input[type="number"],
+    select {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px 8px;
+      background: white;
+      color: var(--ink);
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      min-height: 86px;
+    }
+
+    .metric .name {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-size: 24px;
+      font-weight: 750;
+      line-height: 1.1;
+    }
+
+    .barset {
+      display: grid;
+      gap: 10px;
+    }
+
+    .barrow {
+      display: grid;
+      grid-template-columns: 128px 1fr 82px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .track {
+      height: 16px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), #2563eb);
+      border-radius: inherit;
+      transition: width 180ms ease;
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: #075985;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .formula {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    @media (max-width: 860px) {
+      main {
+        padding: 14px;
+      }
+
+      header,
+      .grid {
+        display: block;
+      }
+
+      .status {
+        margin-top: 12px;
+      }
+
+      .panel {
+        margin-bottom: 14px;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+      }
+
+      .barrow {
+        grid-template-columns: 104px 1fr 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>LLM 训练显存估算器</h1>
+        <p class="sub">一个简化版估算器，用来观察 Transformer 规模、batch、序列长度、TP/DP/ZeRO 对单卡显存的影响。</p>
+      </div>
+      <div class="status"><span class="dot"></span><span id="fitStatus">estimating</span></div>
+    </header>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="controls" id="controls">
+          <label>
+            Preset
+            <select id="preset">
+              <option value="tiny">Llama-style Tiny</option>
+              <option value="8b">Llama-style 8B</option>
+              <option value="70b">Llama-style 70B</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+
+          <label>Layers
+            <div class="row"><input id="layers" type="range" min="4" max="128" value="32"><input id="layersNum" type="number" min="4" max="128" value="32"></div>
+          </label>
+          <label>Hidden size
+            <div class="row"><input id="hidden" type="range" min="512" max="16384" step="128" value="4096"><input id="hiddenNum" type="number" min="512" max="16384" step="128" value="4096"></div>
+          </label>
+          <label>Sequence length
+            <div class="row"><input id="seq" type="range" min="512" max="32768" step="512" value="4096"><input id="seqNum" type="number" min="512" max="32768" step="512" value="4096"></div>
+          </label>
+          <label>Micro batch size
+            <div class="row"><input id="mbs" type="range" min="1" max="64" value="2"><input id="mbsNum" type="number" min="1" max="64" value="2"></div>
+          </label>
+          <label>Tensor parallel
+            <div class="row"><input id="tp" type="range" min="1" max="16" value="1"><input id="tpNum" type="number" min="1" max="16" value="1"></div>
+          </label>
+          <label>Data parallel / ZeRO shard count
+            <div class="row"><input id="dp" type="range" min="1" max="256" value="8"><input id="dpNum" type="number" min="1" max="256" value="8"></div>
+          </label>
+          <label>
+            ZeRO stage
+            <select id="zero">
+              <option value="0">0 - no sharding</option>
+              <option value="1">1 - optimizer states</option>
+              <option value="2">2 - optimizer + gradients</option>
+              <option value="3">3 - optimizer + gradients + params</option>
+            </select>
+          </label>
+          <label>
+            Activation checkpointing
+            <select id="ckpt">
+              <option value="1">none</option>
+              <option value="0.55">selective</option>
+              <option value="0.28">aggressive</option>
+            </select>
+          </label>
+          <label>GPU memory per card
+            <div class="row"><input id="gpu" type="range" min="16" max="192" step="8" value="80"><input id="gpuNum" type="number" min="16" max="192" step="8" value="80"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="cards">
+          <div class="metric"><div class="name">Approx parameters</div><div class="value" id="params">-</div></div>
+          <div class="metric"><div class="name">Per-GPU training memory</div><div class="value" id="total">-</div></div>
+          <div class="metric"><div class="name">Global batch tokens</div><div class="value" id="tokens">-</div></div>
+          <div class="metric"><div class="name">Rough train FLOPs / step</div><div class="value" id="flops">-</div></div>
+        </div>
+
+        <div class="barset">
+          <div class="barrow"><span>Parameters</span><div class="track"><div id="barParams" class="fill"></div></div><strong id="memParams">-</strong></div>
+          <div class="barrow"><span>Gradients</span><div class="track"><div id="barGrads" class="fill"></div></div><strong id="memGrads">-</strong></div>
+          <div class="barrow"><span>Optimizer</span><div class="track"><div id="barOpt" class="fill"></div></div><strong id="memOpt">-</strong></div>
+          <div class="barrow"><span>Activations</span><div class="track"><div id="barAct" class="fill"></div></div><strong id="memAct">-</strong></div>
+        </div>
+
+        <div class="note" id="note"></div>
+        <div class="formula">
+          Approximation: parameters ≈ layers × 16 × hidden² + 2 × vocab × hidden. Parameter and gradient tensors use bf16/fp16 bytes; Adam states are approximated as 12 bytes per parameter before ZeRO sharding. Activation memory is intentionally rough: layers × sequence × micro-batch × hidden × 2 bytes × factor.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const ids = ["layers", "hidden", "seq", "mbs", "tp", "dp", "gpu"];
+    const presets = {
+      tiny: { layers: 12, hidden: 768, seq: 2048, mbs: 4, tp: 1, dp: 4, gpu: 24, zero: "2", ckpt: "0.55" },
+      "8b": { layers: 32, hidden: 4096, seq: 4096, mbs: 2, tp: 1, dp: 8, gpu: 80, zero: "2", ckpt: "0.55" },
+      "70b": { layers: 80, hidden: 8192, seq: 8192, mbs: 1, tp: 8, dp: 32, gpu: 80, zero: "3", ckpt: "0.28" },
+      custom: null
+    };
+
+    function pair(id) {
+      const slider = document.getElementById(id);
+      const number = document.getElementById(id + "Num");
+      slider.addEventListener("input", () => {
+        number.value = slider.value;
+        document.getElementById("preset").value = "custom";
+        update();
+      });
+      number.addEventListener("input", () => {
+        slider.value = number.value;
+        document.getElementById("preset").value = "custom";
+        update();
+      });
+    }
+
+    ids.forEach(pair);
+    ["zero", "ckpt"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+      document.getElementById("preset").value = "custom";
+      update();
+    }));
+
+    document.getElementById("preset").addEventListener("input", event => {
+      const p = presets[event.target.value];
+      if (!p) return;
+      ids.forEach(id => {
+        document.getElementById(id).value = p[id];
+        document.getElementById(id + "Num").value = p[id];
+      });
+      document.getElementById("zero").value = p.zero;
+      document.getElementById("ckpt").value = p.ckpt;
+      update();
+    });
+
+    function fmtGB(x) {
+      if (x >= 1024) return (x / 1024).toFixed(2) + " TB";
+      if (x >= 10) return x.toFixed(1) + " GB";
+      return x.toFixed(2) + " GB";
+    }
+
+    function fmtParams(x) {
+      if (x >= 1e12) return (x / 1e12).toFixed(2) + "T";
+      if (x >= 1e9) return (x / 1e9).toFixed(2) + "B";
+      if (x >= 1e6) return (x / 1e6).toFixed(1) + "M";
+      return Math.round(x).toLocaleString();
+    }
+
+    function update() {
+      const layers = +document.getElementById("layers").value;
+      const hidden = +document.getElementById("hidden").value;
+      const seq = +document.getElementById("seq").value;
+      const mbs = +document.getElementById("mbs").value;
+      const tp = Math.max(1, +document.getElementById("tp").value);
+      const dp = Math.max(1, +document.getElementById("dp").value);
+      const gpu = +document.getElementById("gpu").value;
+      const zero = +document.getElementById("zero").value;
+      const ckpt = +document.getElementById("ckpt").value;
+      const vocab = 128000;
+
+      const params = layers * 16 * hidden * hidden + 2 * vocab * hidden;
+      const paramGB = params * 2 / 1e9 / (zero >= 3 ? dp : 1) / tp;
+      const gradGB = params * 2 / 1e9 / (zero >= 2 ? dp : 1) / tp;
+      const optGB = params * 12 / 1e9 / (zero >= 1 ? dp : 1) / tp;
+      const actGB = layers * seq * mbs * hidden * 2 * 6 / 1e9 * ckpt / tp;
+      const totalGB = paramGB + gradGB + optGB + actGB;
+      const tokens = seq * mbs * dp;
+      const flops = 6 * params * tokens;
+
+      document.getElementById("params").textContent = fmtParams(params);
+      document.getElementById("total").textContent = fmtGB(totalGB);
+      document.getElementById("tokens").textContent = fmtParams(tokens);
+      document.getElementById("flops").textContent = fmtParams(flops);
+
+      const parts = [
+        ["Params", paramGB, "memParams", "barParams"],
+        ["Grad", gradGB, "memGrads", "barGrads"],
+        ["Opt", optGB, "memOpt", "barOpt"],
+        ["Act", actGB, "memAct", "barAct"]
+      ];
+      const maxPart = Math.max(...parts.map(p => p[1]), 1);
+      parts.forEach(([, value, label, bar]) => {
+        document.getElementById(label).textContent = fmtGB(value);
+        document.getElementById(bar).style.width = Math.max(2, value / maxPart * 100) + "%";
+      });
+
+      const dot = document.querySelector(".dot");
+      const status = document.getElementById("fitStatus");
+      const note = document.getElementById("note");
+      if (totalGB <= gpu * 0.82) {
+        dot.style.background = "#0f766e";
+        status.textContent = "fits comfortably";
+        note.textContent = "估算显存低于单卡容量的 82%。仍需为 kernel workspace、fragmentation、通信 buffer 和 dataloader 留出余量。";
+      } else if (totalGB <= gpu) {
+        dot.style.background = "#ca8a04";
+        status.textContent = "tight fit";
+        note.textContent = "估算值接近单卡上限。真实训练可能因为显存碎片、通信 buffer 或更高激活峰值而 OOM。";
+      } else {
+        dot.style.background = "#dc2626";
+        status.textContent = "likely OOM";
+        note.textContent = "估算值超过单卡容量。可以尝试更高 ZeRO stage、更大 TP、更小 micro batch、更强 activation checkpointing，或减少序列长度。";
+      }
+    }
+
+    update();
+  </script>
+</body>
+</html>
