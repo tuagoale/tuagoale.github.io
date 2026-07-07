@@ -79,6 +79,7 @@
             {{ with $post.Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>{{ end }}
             <span class="text-gray-300 dark:text-gray-600">•</span>
             {{ with $post.ReadingTime }}<span>{{ . }} min read</span>{{ end }}
+            {{ partial "blog/view-count-inline.html" $post }}
           </div>
         </div>
       </div>

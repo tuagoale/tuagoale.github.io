@@ -1,0 +1,16 @@
+{{ $provider := trim (site.Params.hugoblox.comments.provider | lower) " " }}
+{{ $enabled := site.Params.hugoblox.comments.enable | default false }}
+{{ $commentablePage := .Params.commentable | default false }}
+{{ $commentableBlog := eq .Section "blog" }}
+
+{{ if and $enabled $provider (or $commentablePage $commentableBlog) }}
+  {{ $providerTpl := printf "comments/%s.html" $provider }}
+  {{ $providerExists := templates.Exists (printf "_partials/%s" $providerTpl) }}
+  {{ if not $providerExists }}
+    {{ errorf "The '%s' comment provider was not found." $provider }}
+  {{ end }}
+
+  <section id="comments" class="blog-comments mt-12">
+    {{ partial $providerTpl . }}
+  </section>
+{{ end }}

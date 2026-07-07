@@ -1,0 +1,12 @@
+{{ $gc := site.Params.hugoblox.analytics.goatcounter | default dict }}
+{{ $code := $gc.code | default "" }}
+{{ $domain := $gc.domain | default "" }}
+{{ if and (not $domain) $code }}
+  {{ $domain = printf "%s.goatcounter.com" $code }}
+{{ end }}
+{{ if and ($gc.show_page_views | default false) $domain }}
+  <div class="not-prose mt-8 rounded-lg border border-gray-200 bg-white/70 px-4 py-3 text-sm text-gray-600 shadow-sm dark:border-gray-800 dark:bg-gray-950/60 dark:text-gray-400" data-goatcounter-view-wrapper hidden>
+    <span class="font-medium text-gray-800 dark:text-gray-200" data-goatcounter-view-count data-goatcounter-path="{{ .RelPermalink }}">0</span>
+    <span>views for this post</span>
+  </div>
+{{ end }}

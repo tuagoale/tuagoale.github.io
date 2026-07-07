@@ -1,0 +1,53 @@
+{{ $gc := site.Params.hugoblox.analytics.goatcounter | default dict }}
+{{ $code := $gc.code | default "" }}
+{{ $domain := $gc.domain | default "" }}
+{{ if and (not $domain) $code }}
+  {{ $domain = printf "%s.goatcounter.com" $code }}
+{{ end }}
+
+{{ if and hugo.IsProduction $domain }}
+  <script data-goatcounter="https://{{ $domain }}/count"
+          async src="//gc.zgo.at/count.js"></script>
+{{ end }}
+
+{{ if and ($gc.show_page_views | default false) $domain }}
+  <script>
+    window.blogPageViews = {
+      domain: "{{ $domain }}",
+      load: function() {
+        var nodes = document.querySelectorAll("[data-goatcounter-view-count]");
+        nodes.forEach(function(node) {
+          var path = node.getAttribute("data-goatcounter-path") || window.location.pathname;
+          var url = "https://" + window.blogPageViews.domain + "/counter/" + encodeURIComponent(path) + ".json";
+          fetch(url)
+            .then(function(response) {
+              if (!response.ok) throw new Error("missing count");
+              return response.json();
+            })
+            .then(function(data) {
+              node.textContent = data.count || "0";
+              var wrapper = node.closest("[data-goatcounter-view-wrapper]");
+              if (wrapper) {
+                wrapper.removeAttribute("hidden");
+                var previous = wrapper.previousElementSibling;
+                if (previous && previous.hasAttribute("data-goatcounter-view-wrapper")) {
+                  previous.removeAttribute("hidden");
+                }
+              }
+            })
+            .catch(function() {
+              var wrapper = node.closest("[data-goatcounter-view-wrapper]");
+              if (wrapper) {
+                wrapper.setAttribute("hidden", "");
+                var previous = wrapper.previousElementSibling;
+                if (previous && previous.hasAttribute("data-goatcounter-view-wrapper")) {
+                  previous.setAttribute("hidden", "");
+                }
+              }
+            });
+        });
+      }
+    };
+    document.addEventListener("DOMContentLoaded", window.blogPageViews.load);
+  </script>
+{{ end }}

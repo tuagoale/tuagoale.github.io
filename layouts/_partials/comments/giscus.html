@@ -1,0 +1,29 @@
+{{ $config := site.Params.hugoblox.comments.giscus | default dict }}
+{{ $repo := $config.repo | default "" }}
+{{ $repoID := $config.repo_id | default "" }}
+{{ $category := $config.category | default "" }}
+{{ $categoryID := $config.category_id | default "" }}
+{{ $ready := and $repo $repoID $category $categoryID }}
+
+{{ if $ready }}
+  <script src="https://giscus.app/client.js"
+          data-repo="{{ $repo }}"
+          data-repo-id="{{ $repoID }}"
+          data-category="{{ $category }}"
+          data-category-id="{{ $categoryID }}"
+          data-mapping="{{ $config.mapping | default "pathname" }}"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="{{ $config.theme | default "preferred_color_scheme" }}"
+          data-lang="{{ $config.language_code | default "en" }}"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async>
+  </script>
+{{ else if not hugo.IsProduction }}
+  <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">
+    Giscus comments are enabled for blog posts, but <code>repo_id</code> and <code>category_id</code> still need to be filled in <code>config/_default/params.yaml</code>.
+  </div>
+{{ end }}
