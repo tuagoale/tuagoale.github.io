@@ -3,9 +3,6 @@
   {{/* partial "page_edit" . */}}
 
   {{ partial "tags" . }}
-  {{ if eq .Section "blog" }}
-    {{ partial "blog/view-count-block.html" . }}
-  {{ end }}
   {{ partial "page_author" . }}
   {{ partial "components/next-in-series" . }}
   {{ partial "page_related" . }}

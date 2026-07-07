@@ -5,8 +5,8 @@
   {{ $domain = printf "%s.goatcounter.com" $code }}
 {{ end }}
 {{ if and ($gc.show_page_views | default false) $domain }}
-  <span class="text-gray-300 dark:text-gray-600" data-goatcounter-view-wrapper>•</span>
-  <span class="whitespace-nowrap" data-goatcounter-view-wrapper>
+  <span class="mx-1">·</span>
+  <span class="mx-1 whitespace-nowrap">
     <span data-goatcounter-view-count data-goatcounter-path="{{ .RelPermalink }}">0</span> views
   </span>
 {{ end }}

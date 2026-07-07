@@ -36,14 +36,7 @@
               }
             })
             .catch(function() {
-              var wrapper = node.closest("[data-goatcounter-view-wrapper]");
-              if (wrapper) {
-                wrapper.setAttribute("hidden", "");
-                var previous = wrapper.previousElementSibling;
-                if (previous && previous.hasAttribute("data-goatcounter-view-wrapper")) {
-                  previous.setAttribute("hidden", "");
-                }
-              }
+              node.textContent = node.textContent || "0";
             });
         });
       }
