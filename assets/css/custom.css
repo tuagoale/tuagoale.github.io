@@ -9,6 +9,45 @@
   }
 }
 
+body:has(#section-resume-biography-3) .page-header {
+  --hb-color-header-bg: rgba(255, 253, 244, 0.96);
+  --hb-color-header-fg: #4a3412;
+  background: rgba(255, 253, 244, 0.88);
+  border-bottom: 1px solid rgba(217, 119, 6, 0.08);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body:has(#section-resume-biography-3) #site-header {
+  background: transparent;
+}
+
+body:has(#section-resume-biography-3) #site-header .navbar-brand,
+body:has(#section-resume-biography-3) #site-header .nav-link {
+  color: var(--hb-color-header-fg);
+}
+
+body:has(#section-resume-biography-3) #site-header .nav-link.active,
+body:has(#section-resume-biography-3) #site-header .nav-link:hover,
+body:has(#section-resume-biography-3) #site-header button:hover,
+body:has(#section-resume-biography-3) #site-header select:hover {
+  color: #b45309;
+}
+
+.dark body:has(#section-resume-biography-3) .page-header {
+  --hb-color-header-bg: rgba(45, 34, 21, 0.94);
+  --hb-color-header-fg: #fde68a;
+  background: rgba(45, 34, 21, 0.9);
+  border-bottom-color: rgba(251, 191, 36, 0.16);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+}
+
+.dark body:has(#section-resume-biography-3) #site-header .nav-link.active,
+.dark body:has(#section-resume-biography-3) #site-header .nav-link:hover,
+.dark body:has(#section-resume-biography-3) #site-header button:hover,
+.dark body:has(#section-resume-biography-3) #site-header select:hover {
+  color: #fbbf24;
+}
+
 #section-resume-biography-3 {
   background:
     radial-gradient(circle at 0% 0%, rgba(255, 251, 247, 0.98) 0%, rgba(255, 244, 232, 0.54) 24%, transparent 46%),
@@ -59,6 +98,46 @@
 .dark #section-resume-biography-3 .home-section-bg {
   background:
     linear-gradient(180deg, rgba(67, 20, 7, 0.16), rgba(15, 23, 42, 0.04));
+}
+
+#section-resume-biography-3 .avatar-wrapper + .space-y-3 > p.text-2xl.font-semibold {
+  color: #b45309;
+}
+
+.dark #section-resume-biography-3 .avatar-wrapper + .space-y-3 > p.text-2xl.font-semibold {
+  color: #fbbf24;
+}
+
+#section-resume-biography-3 a[href$="resume.pdf"] {
+  background-image: linear-gradient(135deg, #d97706 0%, #b45309 52%, #92400e 100%);
+  box-shadow:
+    0 10px 24px rgba(146, 64, 14, 0.2),
+    0 3px 8px rgba(146, 64, 14, 0.14);
+}
+
+#section-resume-biography-3 a[href$="resume.pdf"]:hover {
+  background-image: linear-gradient(135deg, #b45309 0%, #92400e 55%, #78350f 100%);
+  box-shadow:
+    0 14px 30px rgba(146, 64, 14, 0.26),
+    0 4px 10px rgba(146, 64, 14, 0.18);
+}
+
+#section-resume-biography-3 .md\:col-span-8 > .mb-12 > .flex > .flex-shrink-0 {
+  background: rgba(245, 158, 11, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.18);
+}
+
+#section-resume-biography-3 .md\:col-span-8 > .mb-12 > .flex > .flex-shrink-0 svg {
+  color: #b45309;
+}
+
+.dark #section-resume-biography-3 .md\:col-span-8 > .mb-12 > .flex > .flex-shrink-0 {
+  background: rgba(245, 158, 11, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.2);
+}
+
+.dark #section-resume-biography-3 .md\:col-span-8 > .mb-12 > .flex > .flex-shrink-0 svg {
+  color: #fbbf24;
 }
 
 .blog-list-page {
