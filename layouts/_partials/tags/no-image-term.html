@@ -1,0 +1,104 @@
+<section class="mx-auto w-full max-w-6xl px-5 py-10 sm:px-6">
+  <header class="mb-10">
+    <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-100 px-3 py-1 text-sm font-semibold text-primary-800 dark:bg-primary-900/40 dark:text-primary-300">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.57 3H5.25A2.25 2.25 0 0 0 3 5.25v4.32c0 .6.237 1.168.659 1.591l8.18 8.18a2.25 2.25 0 0 0 3.182 0l4.32-4.32a2.25 2.25 0 0 0 0-3.182l-8.18-8.18A2.25 2.25 0 0 0 9.57 3Z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.75 6.75h.008v.008H6.75V6.75Z"></path>
+      </svg>
+      <span>Tag</span>
+    </div>
+    <h1 class="text-4xl font-bold tracking-normal text-gray-900 dark:text-gray-100">{{ .Title }}</h1>
+    {{ with .Content }}
+      <div class="prose prose-slate mt-4 max-w-3xl dark:prose-invert">{{ . }}</div>
+    {{ end }}
+    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ len .Pages }} posts tagged with {{ .Title }}.</p>
+  </header>
+
+  {{ $paginator := .Paginate .Pages.ByDate.Reverse }}
+  <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+    {{ range $item := $paginator.Pages }}
+      {{ $link := $item.RelPermalink }}
+      {{ $target := "" }}
+      {{ if $item.Params.external_link }}
+        {{ $link = $item.Params.external_link }}
+        {{ $target = "target=\"_blank\" rel=\"noopener\"" }}
+      {{ end }}
+      <article class="group rounded-2xl bg-white/90 p-8 shadow-lg ring-1 ring-zinc-900/5 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:shadow-primary-500/10 focus-within:ring-2 focus-within:ring-primary-500/50 dark:bg-zinc-900/90 dark:ring-white/10">
+        <div class="space-y-4">
+          {{ with $item.GetTerms "tags" }}
+            <div class="flex flex-wrap items-center gap-2">
+              {{ range first 3 . }}
+                <a href="{{ .RelPermalink }}">
+                  <span class="inline-flex items-center rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800 transition hover:bg-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:hover:bg-primary-800/60">
+                    {{ .Page.LinkTitle }}
+                  </span>
+                </a>
+              {{ end }}
+            </div>
+          {{ end }}
+
+          <h3 class="text-xl font-bold leading-tight tracking-tight text-zinc-900 transition-colors duration-200 group-hover:text-primary-600 dark:text-zinc-100 dark:group-hover:text-primary-400">
+            <a href="{{ $link }}" {{ $target | safeHTMLAttr }} class="hover:underline">
+              {{ $item.Title }}
+              {{ if $item.Params.external_link }}
+                {{ partial "functions/get_icon" (dict "name" "arrow-top-right-on-square" "attributes" "style=\"height: 1em;\" class=\"inline-flex h-4 w-4 ml-1 align-text-top\"") }}
+              {{ end }}
+            </a>
+          </h3>
+
+          <p class="line-clamp-3 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {{ (partial "functions/get_summary" $item) | plainify | htmlUnescape | truncate 180 }}
+          </p>
+
+          <div class="border-t border-zinc-100 pt-3 dark:border-zinc-800">
+            <div class="mb-3 flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
+              {{ with $item.Params.authors }}
+                {{ $slug := index . 0 | urlize }}
+                {{ $profile := partial "functions/get_author_profile" $slug }}
+                {{ $avatar := $profile.avatar }}
+                <div class="flex min-w-0 items-center gap-2">
+                  <div class="relative h-6 w-6 flex-shrink-0">
+                    {{ with $avatar }}
+                      {{ if not (reflect.IsImageResourceProcessable .) }}
+                        <img alt="avatar" class="rounded-full object-cover" src="{{ .RelPermalink }}" width="24" height="24" loading="lazy" decoding="async" />
+                      {{ else }}
+                        {{ $avatar_48 := .Process "Fill 48x48 Center webp" }}
+                        <img alt="avatar" class="rounded-full object-cover" src="{{ $avatar_48.RelPermalink }}" width="24" height="24" loading="lazy" decoding="async" />
+                      {{ end }}
+                    {{ else }}
+                      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                        {{ partial "functions/get_icon" (dict "name" "hero/user" "attributes" "class=\"h-4 w-4 text-gray-500 dark:text-gray-400\"") }}
+                      </div>
+                    {{ end }}
+                  </div>
+                  <span class="max-w-[9rem] truncate text-sm">{{ $profile.title | default $slug }}</span>
+                </div>
+                <span class="opacity-40">•</span>
+              {{ end }}
+              {{ if not $item.Date.IsZero }}
+                <time class="hidden whitespace-nowrap sm:inline" datetime="{{ $item.Date.Format "2006-01-02" }}">
+                  {{ $item.Date.Format "Jan 2, 2006" }}
+                </time>
+                <span class="hidden opacity-40 sm:inline">•</span>
+              {{ end }}
+              <span class="hidden whitespace-nowrap sm:inline">{{ $item.ReadingTime }} min read</span>
+            </div>
+
+            <div class="border-t border-zinc-200/50 pt-2 dark:border-zinc-700/50">
+              <a href="{{ $link }}" {{ $target | safeHTMLAttr }} class="group/link inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition-all duration-300 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                <span>Read more</span>
+                <svg class="h-4 w-4 transition-transform group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    {{ end }}
+  </div>
+
+  <div class="mt-10">
+    {{ partial "components/paginator" . }}
+  </div>
+</section>
