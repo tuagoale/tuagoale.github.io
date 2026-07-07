@@ -13,9 +13,28 @@ status:
   icon: ""
 role: B.S. Candidate in Computer Science
 bio: |
-  Zunzhe Zhang is an undergraduate student at the Institute for Interdisciplinary
-  Information Sciences, Tsinghua University. His work focuses on embodied AI,
-  Vision-Language-Action models, LLM agents, and robust robotic control.
+  I am a B.S. candidate in Computer Science at the Institute for
+  Interdisciplinary Information Sciences, Tsinghua University. My research
+  focuses on embodied intelligence: agents that connect perception, language,
+  memory, and continuous control to act reliably in physical or simulated
+  environments.
+
+  Recently, I have been working on Vision-Language-Action foundation models,
+  flow-matching control policies, LLM-based embodied agents, and interactive
+  multi-agent simulation. I am also interested in evaluation and simulation
+  tooling: how to expose meaningful failures, generate useful data, and make
+  robotic policies more robust outside narrow demos.
+
+  I previously worked on embodied AI research with Prof. Chuang Gan at UMass
+  Amherst, contributing to projects on LLM agents and virtual communities. I
+  also worked as a VLA algorithm intern at Galaxea Inc., where I explored
+  continuous action generation and adaptive robotic control.
+
+article_bio: |
+  I am a CS undergraduate at Tsinghua IIIS working on embodied AI,
+  Vision-Language-Action models, and robotic control. My recent work studies
+  how agents connect language, perception, memory, and continuous action in
+  simulated and physical environments.
 
 affiliations:
   - name: Institute for Interdisciplinary Information Sciences, Tsinghua University
@@ -25,6 +44,7 @@ links:
   - icon: at-symbol
     url: mailto:zhang-zz22@mails.tsinghua.edu.cn
     label: Email
+wechat: zzz1607432325
 
 interests:
   - Embodied AI

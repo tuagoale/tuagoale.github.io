@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Zunzhe Zhang site icon">
+  <defs>
+    <linearGradient id="bg" x1="28" y1="28" x2="228" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="0.55" stop-color="#1e3a5f"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="72" y1="68" x2="188" y2="184" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#d1fae5"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <path d="M68 74h118v28l-76 90h79v30H66v-28l76-90H68V74Z" fill="url(#mark)"/>
+  <path d="M92 48h96v25H92V48Zm-24 135h96v25H68v-25Z" fill="#67e8f9" opacity="0.42"/>
+</svg>

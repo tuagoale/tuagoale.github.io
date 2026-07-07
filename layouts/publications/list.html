@@ -11,27 +11,47 @@
     {{ range .Pages.ByDate.Reverse }}
       {{ $authors := .Params.authors | default (slice) }}
       {{ $authorCount := len $authors }}
+      {{ $equalContribution := .Params.equal_contribution | default (slice) }}
+      {{ $hasEqualContribution := gt (len $equalContribution) 0 }}
       {{ $owner := "Zunzhe Zhang" }}
       {{ $ownerShown := false }}
+      {{ $paperURL := .RelPermalink }}
+      {{ with .Params.hugoblox }}
+        {{ with .ids }}
+          {{ with .arxiv }}
+            {{ $paperURL = printf "https://arxiv.org/abs/%s" . }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{ range .Params.links }}
+        {{ $url := .url | default "" }}
+        {{ $label := lower (.label | default "") }}
+        {{ if and $url (or (eq $label "arxiv") (in $url "arxiv.org/abs/")) }}
+          {{ $paperURL = $url }}
+        {{ end }}
+      {{ end }}
       <article class="py-7">
         <h2 class="text-xl font-semibold leading-snug tracking-normal text-gray-950 dark:text-gray-50">
-          <a class="hover:text-primary-600 dark:hover:text-primary-400" href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <a class="hover:text-primary-600 dark:hover:text-primary-400" href="{{ $paperURL }}" target="_blank" rel="noopener">{{ .Title }}</a>
         </h2>
 
         {{ if gt $authorCount 0 }}
           <p class="mt-3 text-sm leading-6 text-gray-700 dark:text-gray-300">
             {{ if le $authorCount 10 }}
               {{ range $index, $author := $authors }}
+                {{- $isEqualContribution := in $equalContribution $author -}}
                 {{- if gt $index 0 }}, {{ end -}}
                 {{- if eq $author $owner -}}
                   <strong class="font-semibold text-gray-950 dark:text-gray-50">{{ $author }}</strong>
                 {{- else -}}
                   {{ $author }}
                 {{- end -}}
+                {{- if $isEqualContribution -}}<sup class="ml-0.5 text-[0.7em] font-semibold text-gray-700 dark:text-gray-300" title="Equal contribution">*</sup>{{- end -}}
               {{ end }}
             {{ else }}
               {{ range $index, $author := $authors }}
                 {{ if lt $index 6 }}
+                  {{- $isEqualContribution := in $equalContribution $author -}}
                   {{- if gt $index 0 }}, {{ end -}}
                   {{- if eq $author $owner -}}
                     {{- $ownerShown = true -}}
@@ -39,16 +59,21 @@
                   {{- else -}}
                     {{ $author }}
                   {{- end -}}
+                  {{- if $isEqualContribution -}}<sup class="ml-0.5 text-[0.7em] font-semibold text-gray-700 dark:text-gray-300" title="Equal contribution">*</sup>{{- end -}}
                 {{ end }}
               {{ end }}
               {{ if not $ownerShown }}
                 {{ range $authors }}
                   {{ if eq . $owner }}
-                    , <strong class="font-semibold text-gray-950 dark:text-gray-50">{{ . }}</strong>
+                    {{- $isEqualContribution := in $equalContribution . -}}
+                    , <strong class="font-semibold text-gray-950 dark:text-gray-50">{{ . }}</strong>{{ if $isEqualContribution }}<sup class="ml-0.5 text-[0.7em] font-semibold text-gray-700 dark:text-gray-300" title="Equal contribution">*</sup>{{ end }}
                   {{ end }}
                 {{ end }}
               {{ end }}
               , et al.
+            {{ end }}
+            {{ if $hasEqualContribution }}
+              <span class="ml-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">* Equal contribution</span>
             {{ end }}
           </p>
         {{ end }}

@@ -16,7 +16,7 @@ sections:
         text: Download Resume
         url: uploads/resume.pdf
       headings:
-        about: ''
+        about: About Me
         education: ''
         interests: ''
     design:
@@ -33,16 +33,4 @@ sections:
       avatar:
         size: medium # Options: small (150px), medium (200px, default), large (320px), xl (400px), xxl (500px)
         shape: circle # Options: circle (default), square, rounded
-  - block: markdown
-    content:
-      title: 'Research'
-      subtitle: ''
-      text: |-
-        I am interested in embodied intelligence: how agents perceive, reason, remember, and act in interactive environments.
-
-        My recent work focuses on Vision-Language-Action models, LLM-based embodied agents, flow-matching control policies, and simulated environments for multi-agent interaction.
-
-        I am currently pursuing a B.S. in Computer Science at the Institute for Interdisciplinary Information Sciences, Tsinghua University.
-    design:
-      columns: '1'
 ---

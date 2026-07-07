@@ -1,5 +1,8 @@
 ---
 title: "Generative Control as Optimization: Time Unconditional Flow Matching for Adaptive and Robust Robotic Control"
+build:
+  render: link
+  list: always
 authors:
   - Zunzhe Zhang
   - Runhan Huang
@@ -7,6 +10,9 @@ authors:
   - Shaoting Zhu
   - Linzhan Mou
   - Hang Zhao
+equal_contribution:
+  - Zunzhe Zhang
+  - Runhan Huang
 date: "2026-04-26T00:00:00Z"
 publishDate: "2026-03-18T00:00:00Z"
 publication_types: ["paper-conference"]

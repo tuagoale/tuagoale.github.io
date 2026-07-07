@@ -1,5 +1,8 @@
 ---
 title: "Virtual Community: An Open World for Humans, Robots, and Society"
+build:
+  render: link
+  list: always
 authors:
   - Qinhong Zhou
   - Hongxin Zhang

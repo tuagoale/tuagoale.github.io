@@ -1,5 +1,8 @@
 ---
 title: "Ella: Embodied Social Agents with Lifelong Memory"
+build:
+  render: link
+  list: always
 authors:
   - Hongxin Zhang
   - Zheyuan Zhang
