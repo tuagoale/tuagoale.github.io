@@ -45,6 +45,9 @@ node_modules/
 pagefind/
 static/pagefind/
 
+# Local source photos kept outside the published site repo
+/2026*.jpg
+
 # ============================================================================
 # Operating System
 # ============================================================================
