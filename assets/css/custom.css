@@ -417,3 +417,249 @@ mjx-container[jax="CHTML"][display="true"] {
 .dark .blog-comments {
   border-color: rgba(100, 116, 139, 0.62);
 }
+
+.prose sup.footnote-preview-trigger {
+  scroll-margin-top: calc(var(--navbar-height, 4rem) + 1rem);
+}
+
+.prose a.footnote-ref,
+.prose a[role="doc-noteref"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  margin-inline: 0.08em;
+  padding-inline: 0.28em;
+  border: 1px solid rgba(14, 116, 144, 0.2);
+  border-radius: 9999px;
+  background: rgba(14, 165, 233, 0.12);
+  color: rgb(14, 116, 144);
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transform: translateY(-0.08em);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.prose a.footnote-ref.has-footnote-preview,
+.prose a[role="doc-noteref"].has-footnote-preview {
+  cursor: help;
+}
+
+.prose a.footnote-ref:hover,
+.prose a.footnote-ref:focus-visible,
+.prose a[role="doc-noteref"]:hover,
+.prose a[role="doc-noteref"]:focus-visible {
+  border-color: rgba(14, 116, 144, 0.42);
+  background: rgba(14, 165, 233, 0.2);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+  color: rgb(12, 74, 110);
+  outline: none;
+}
+
+.dark .prose a.footnote-ref,
+.dark .prose a[role="doc-noteref"] {
+  border-color: rgba(125, 211, 252, 0.24);
+  background: rgba(8, 145, 178, 0.22);
+  color: rgb(125, 211, 252);
+}
+
+.dark .prose a.footnote-ref:hover,
+.dark .prose a.footnote-ref:focus-visible,
+.dark .prose a[role="doc-noteref"]:hover,
+.dark .prose a[role="doc-noteref"]:focus-visible {
+  border-color: rgba(125, 211, 252, 0.48);
+  background: rgba(8, 145, 178, 0.32);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+  color: rgb(224, 242, 254);
+}
+
+.prose .footnotes {
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.42);
+  font-size: 0.86em;
+}
+
+.prose .footnotes hr {
+  display: none;
+}
+
+.prose .footnotes ol {
+  padding-left: 1.35rem;
+}
+
+.prose .footnotes li {
+  scroll-margin-top: calc(var(--navbar-height, 4rem) + 1rem);
+}
+
+.prose .footnotes li::marker {
+  color: rgb(14, 116, 144);
+  font-weight: 700;
+}
+
+.prose .footnotes .footnote-backref {
+  margin-left: 0.2rem;
+  color: rgb(14, 116, 144);
+  text-decoration: none;
+}
+
+.prose .footnotes .footnote-backref:hover,
+.prose .footnotes .footnote-backref:focus-visible {
+  color: rgb(12, 74, 110);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.dark .prose .footnotes {
+  border-color: rgba(100, 116, 139, 0.62);
+}
+
+.dark .prose .footnotes li::marker,
+.dark .prose .footnotes .footnote-backref {
+  color: rgb(125, 211, 252);
+}
+
+.dark .prose .footnotes .footnote-backref:hover,
+.dark .prose .footnotes .footnote-backref:focus-visible {
+  color: rgb(224, 242, 254);
+}
+
+.footnote-popover {
+  position: fixed;
+  z-index: 80;
+  width: max-content;
+  max-width: min(34rem, calc(100vw - 1.5rem));
+  overflow: visible;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.16),
+    0 4px 14px rgba(15, 23, 42, 0.08);
+  color: rgb(30, 41, 59);
+  font-family: var(--hb-font-body, ui-serif, Georgia, serif);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  overflow-wrap: break-word;
+  transform: translateY(0.18rem) scale(0.985);
+  transform-origin: var(--footnote-arrow-left, 50%) 100%;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.footnote-popover[hidden] {
+  display: none;
+}
+
+.footnote-popover.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.footnote-popover::before {
+  position: absolute;
+  left: var(--footnote-arrow-left, 50%);
+  width: 0.72rem;
+  height: 0.72rem;
+  border-color: rgba(148, 163, 184, 0.42);
+  border-style: solid;
+  border-width: 0;
+  background: inherit;
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.footnote-popover[data-placement="top"]::before {
+  bottom: -0.4rem;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.footnote-popover[data-placement="bottom"]::before {
+  top: -0.4rem;
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+
+.footnote-popover-label {
+  margin-bottom: 0.42rem;
+  color: rgb(14, 116, 144);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.footnote-popover-content > :first-child {
+  margin-top: 0;
+}
+
+.footnote-popover-content {
+  max-height: min(54vh, 23rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.08rem;
+}
+
+.footnote-popover-content > :last-child {
+  margin-bottom: 0;
+}
+
+.footnote-popover-content p {
+  margin: 0.45rem 0;
+}
+
+.footnote-popover-content ul,
+.footnote-popover-content ol {
+  margin: 0.45rem 0 0.45rem 1.1rem;
+  padding-left: 1rem;
+}
+
+.footnote-popover-content li + li {
+  margin-top: 0.25rem;
+}
+
+.footnote-popover-content a {
+  color: rgb(14, 116, 144);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.footnote-popover-content .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.12rem;
+}
+
+.dark .footnote-popover {
+  border-color: rgba(100, 116, 139, 0.68);
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow:
+    0 18px 46px rgba(0, 0, 0, 0.42),
+    0 4px 14px rgba(0, 0, 0, 0.32);
+  color: rgb(226, 232, 240);
+}
+
+.dark .footnote-popover::before {
+  border-color: rgba(100, 116, 139, 0.68);
+}
+
+.dark .footnote-popover-label,
+.dark .footnote-popover-content a {
+  color: rgb(125, 211, 252);
+}

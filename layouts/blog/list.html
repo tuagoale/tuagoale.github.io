@@ -49,7 +49,7 @@
       {{ end }}
     </div>
 
-    {{ if gt (len $months) 1 }}
+    {{ if gt (len $months) 0 }}
       <aside class="blog-archive-timeline" aria-label="Blog archive timeline">
         <div class="blog-timeline-panel">
           <div class="blog-timeline-heading">Archive</div>
@@ -80,7 +80,7 @@
   </section>
 </div>
 
-{{ if gt (len $months) 1 }}
+{{ if gt (len $months) 0 }}
   <script>
     (function() {
       var root = document.querySelector("[data-blog-timeline]");

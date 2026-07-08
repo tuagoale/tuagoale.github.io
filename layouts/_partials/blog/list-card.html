@@ -1,10 +1,13 @@
 {{ $post := . }}
 {{ $authorSlug := "me" }}
+{{ $authorTitle := "me" }}
 {{ $authors := $post.Params.authors | default (slice) }}
 {{ if gt (len $authors) 0 }}
-  {{ $authorSlug = index $authors 0 }}
+  {{ $authorTitle = index $authors 0 }}
+  {{ $authorSlug = $authorTitle | urlize }}
 {{ end }}
-{{ $profile := partial "functions/get_author_profile" $authorSlug }}
+{{ $profile := partial "functions/get_author_profile" (dict "slug" $authorSlug "title" $authorTitle) }}
+{{ $authorDisplay := $profile.title | default $authorTitle }}
 {{ $avatar := $profile.avatar }}
 <article class="blog-list-card group relative overflow-hidden rounded-lg border border-gray-200/80 bg-gradient-to-br from-white via-white to-orange-50/40 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg dark:border-gray-800 dark:from-gray-950 dark:via-gray-950 dark:to-slate-900 dark:hover:border-sky-900/70">
   <div class="relative">
@@ -60,7 +63,7 @@
                   <img src="{{ .RelPermalink }}"
                        width="24"
                        height="24"
-                       alt="{{ $profile.title }}"
+                       alt="{{ $authorDisplay }}"
                        class="h-6 w-6 rounded-full object-cover"
                        loading="lazy" />
                 {{ else }}
@@ -68,12 +71,12 @@
                   <img src="{{ $avatar_24.RelPermalink }}"
                        width="24"
                        height="24"
-                       alt="{{ $profile.title }}"
+                       alt="{{ $authorDisplay }}"
                        class="h-6 w-6 rounded-full object-cover"
                        loading="lazy" />
                 {{ end }}
               {{ end }}
-              <span class="truncate">{{ $profile.title | default $authorSlug }}</span>
+              <span class="truncate">{{ $authorDisplay }}</span>
             </div>
             <span class="text-gray-300 dark:text-gray-600">•</span>
             {{ with $post.Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>{{ end }}

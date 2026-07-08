@@ -4,8 +4,11 @@
 {{ $avatar_shape := site.Params.hugoblox.layout.avatar_shape | default "circle" }}
 
 {{ if $profile }}
-  {{/* If it's a personal site and the profile is owner, link home */}}
-  {{ $profile_url := printf "/authors/%s/" $profile.slug }}
+  {{ $profile_url := "" }}
+  {{ with site.GetPage (printf "/authors/%s" $profile.slug) }}
+    {{ $profile_url = .RelPermalink }}
+  {{ end }}
+  {{/* If it's a personal site and the profile is owner, link home. */}}
   {{ if and (eq $site_type "Person") ($profile.is_owner) }}
     {{ $profile_url = site.BaseURL }}
   {{ end }}

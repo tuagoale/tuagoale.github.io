@@ -53,8 +53,10 @@
           <div class="border-t border-zinc-100 pt-3 dark:border-zinc-800">
             <div class="mb-3 flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
               {{ with $item.Params.authors }}
-                {{ $slug := index . 0 | urlize }}
-                {{ $profile := partial "functions/get_author_profile" $slug }}
+                {{ $authorTitle := index . 0 }}
+                {{ $slug := $authorTitle | urlize }}
+                {{ $profile := partial "functions/get_author_profile" (dict "slug" $slug "title" $authorTitle) }}
+                {{ $authorDisplay := $profile.title | default $authorTitle }}
                 {{ $avatar := $profile.avatar }}
                 <div class="flex min-w-0 items-center gap-2">
                   <div class="relative h-6 w-6 flex-shrink-0">
@@ -71,7 +73,7 @@
                       </div>
                     {{ end }}
                   </div>
-                  <span class="max-w-[9rem] truncate text-sm">{{ $profile.title | default $slug }}</span>
+                  <span class="max-w-[9rem] truncate text-sm">{{ $authorDisplay }}</span>
                 </div>
                 <span class="opacity-40">•</span>
               {{ end }}

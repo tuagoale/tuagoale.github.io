@@ -1,0 +1,326 @@
+<div class="scaling-widget" data-scaling-widget>
+  <style>
+    .scaling-widget {
+      --sw-bg: #ffffff;
+      --sw-border: #d7dee8;
+      --sw-panel: #f8fafc;
+      --sw-text: #172033;
+      --sw-muted: #5f6b7a;
+      --sw-grid: #e6ebf2;
+      --sw-true: #64748b;
+      --sw-fit: #0f86b6;
+      --sw-point: #9ca3af;
+      --sw-highlight: #d97706;
+      box-sizing: border-box;
+      width: 100%;
+      margin: 1.75rem 0;
+      padding: 1rem;
+      border: 1px solid var(--sw-border);
+      border-radius: 8px;
+      background: var(--sw-bg);
+      color: var(--sw-text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .dark .scaling-widget {
+      --sw-bg: #111827;
+      --sw-border: #334155;
+      --sw-panel: #172033;
+      --sw-text: #e5edf7;
+      --sw-muted: #a6b2c2;
+      --sw-grid: #273446;
+      --sw-true: #94a3b8;
+      --sw-fit: #38bdf8;
+      --sw-point: #64748b;
+      --sw-highlight: #f59e0b;
+    }
+
+    .scaling-widget * {
+      box-sizing: border-box;
+    }
+
+    .scaling-widget__title {
+      margin: 0 0 0.25rem;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .scaling-widget__subtitle {
+      margin: 0 0 1rem;
+      color: var(--sw-muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .scaling-widget__plot-wrap {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--sw-border);
+      border-radius: 8px;
+      background: var(--sw-panel);
+    }
+
+    .scaling-widget svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 300px;
+    }
+
+    .scaling-widget__bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(14rem, 17rem);
+      gap: 1rem;
+      margin-top: 1rem;
+      align-items: start;
+    }
+
+    .scaling-widget__controls {
+      display: grid;
+      gap: 0.9rem;
+      padding: 0.9rem;
+      border: 1px solid var(--sw-border);
+      border-radius: 8px;
+      background: var(--sw-panel);
+    }
+
+    .scaling-widget__control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: var(--sw-text);
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .scaling-widget__control span {
+      white-space: nowrap;
+      color: var(--sw-muted);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    .scaling-widget__control small {
+      display: block;
+      margin-top: 0.25rem;
+      color: var(--sw-muted);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .scaling-widget input,
+    .scaling-widget select {
+      width: 100%;
+      min-height: 2rem;
+      color: var(--sw-text);
+      accent-color: var(--sw-fit);
+    }
+
+    .scaling-widget__readout {
+      height: 100%;
+      padding: 0.9rem;
+      border: 1px solid var(--sw-border);
+      border-radius: 8px;
+      background: var(--sw-panel);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .scaling-widget__readout strong {
+      color: var(--sw-text);
+    }
+
+    .scaling-widget__readout code {
+      color: var(--sw-highlight);
+      font-size: 0.86em;
+    }
+
+    @media (max-width: 760px) {
+      .scaling-widget {
+        padding: 0.8rem;
+      }
+
+      .scaling-widget__bottom {
+        grid-template-columns: 1fr;
+      }
+
+      .scaling-widget svg {
+        min-height: 240px;
+      }
+    }
+  </style>
+
+  <p class="scaling-widget__title">缩放律拟合玩具模拟</p>
+  <p class="scaling-widget__subtitle">
+    调整损失精度、噪声和拟合区域，观察一个看似很小的实验处理选择如何改变外推出来的缩放指数。
+  </p>
+  <div class="scaling-widget__plot-wrap">
+    <svg viewBox="0 0 820 430" role="img" aria-label="损失和数据规模之间的缩放律拟合曲线" data-plot></svg>
+  </div>
+  <div class="scaling-widget__bottom">
+    <div class="scaling-widget__controls">
+      <div class="scaling-widget__control">
+        <label for="sw-precision">损失精度 <span data-precision-label>4 位小数</span></label>
+        <select id="sw-precision" data-precision>
+          <option value="4">4 位小数</option>
+          <option value="3">3 位小数</option>
+          <option value="2">2 位小数</option>
+          <option value="1">1 位小数</option>
+        </select>
+        <small>把观测损失四舍五入得更粗，会改变拟合出的参数。</small>
+      </div>
+      <div class="scaling-widget__control">
+        <label for="sw-noise">损失噪声 <span data-noise-label>0.000</span></label>
+        <input id="sw-noise" data-noise type="range" min="0" max="6" step="1" value="0">
+        <small>模拟 milli-loss 量级的测量扰动。</small>
+      </div>
+      <div class="scaling-widget__control">
+        <label for="sw-region">拟合区域 <span data-region-label>全部模型</span></label>
+        <select id="sw-region" data-region>
+          <option value="all">全部模型</option>
+          <option value="small">只用小模型</option>
+          <option value="medium">只用中等模型</option>
+        </select>
+        <small>只在较小尺度上拟合，然后外推到大模型，误差会被放大。</small>
+      </div>
+    </div>
+    <div class="scaling-widget__readout" data-readout></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.currentScript.previousElementSibling;
+  if (!root || root.dataset.ready === "true") return;
+  root.dataset.ready = "true";
+
+  const svg = root.querySelector("[data-plot]");
+  const precision = root.querySelector("[data-precision]");
+  const noise = root.querySelector("[data-noise]");
+  const region = root.querySelector("[data-region]");
+  const precisionLabel = root.querySelector("[data-precision-label]");
+  const noiseLabel = root.querySelector("[data-noise-label]");
+  const regionLabel = root.querySelector("[data-region-label]");
+  const readout = root.querySelector("[data-readout]");
+
+  const A = 482.01;
+  const B = 2085.43;
+  const E = 1.8172;
+  const alpha = 0.3478;
+  const beta = 0.3658;
+  const fixedN = 1e9;
+  const Ds = [5e7, 9e7, 1.6e8, 3e8, 5e8, 9e8, 1.6e9, 3e9, 5e9, 9e9, 1.6e10, 3e10, 6e10];
+  const regionText = { all: "全部模型", small: "只用小模型", medium: "只用中等模型" };
+
+  function loss(n, d, a = alpha, b = beta, offset = E) {
+    return A * Math.pow(n, -a) + B * Math.pow(d, -b) + offset;
+  }
+
+  function perturb(index, noiseLevel) {
+    return (Math.sin(index * 2.17) + Math.cos(index * 0.71)) * noiseLevel * 0.001;
+  }
+
+  function fittedParams() {
+    const p = Number(precision.value);
+    const n = Number(noise.value);
+    const r = region.value;
+    let a = alpha;
+    let b = beta;
+    let offset = E;
+
+    if (r === "small") {
+      a -= 0.035;
+      b += 0.046;
+      offset += 0.018;
+    } else if (r === "medium") {
+      a += 0.022;
+      b -= 0.029;
+      offset -= 0.009;
+    }
+
+    const rounding = 4 - p;
+    a += rounding * 0.006 - n * 0.0017;
+    b -= rounding * 0.007 + n * 0.0012;
+    offset += rounding * 0.006 + n * 0.002;
+
+    return { a, b, offset };
+  }
+
+  function roundLoss(value, digits) {
+    const scale = Math.pow(10, digits);
+    return Math.round(value * scale) / scale;
+  }
+
+  function draw() {
+    const digits = Number(precision.value);
+    const noiseLevel = Number(noise.value);
+    const fit = fittedParams();
+    const xs = Ds.map(d => Math.log10(d));
+    const trueYs = Ds.map((d, i) => loss(fixedN, d) + perturb(i, noiseLevel));
+    const observed = trueYs.map(y => roundLoss(y, digits));
+    const fitYs = Ds.map(d => loss(fixedN, d, fit.a, fit.b, fit.offset));
+    const allY = trueYs.concat(observed, fitYs);
+    const xMin = Math.min(...xs);
+    const xMax = Math.max(...xs);
+    const yMin = Math.min(...allY) - 0.015;
+    const yMax = Math.max(...allY) + 0.015;
+
+    const W = 820;
+    const H = 430;
+    const margin = { left: 68, right: 28, top: 32, bottom: 58 };
+    const plotW = W - margin.left - margin.right;
+    const plotH = H - margin.top - margin.bottom;
+    const sx = x => margin.left + ((x - xMin) / (xMax - xMin)) * plotW;
+    const sy = y => margin.top + (1 - ((y - yMin) / (yMax - yMin))) * plotH;
+    const linePath = ys => xs.map((x, i) => `${i ? "L" : "M"} ${sx(x).toFixed(1)} ${sy(ys[i]).toFixed(1)}`).join(" ");
+    const gridX = [8, 9, 10];
+    const gridY = Array.from({ length: 5 }, (_, i) => yMin + (i / 4) * (yMax - yMin));
+
+    svg.innerHTML = `
+      <rect x="0" y="0" width="${W}" height="${H}" fill="transparent"></rect>
+      ${gridX.map(x => `<line x1="${sx(x)}" x2="${sx(x)}" y1="${margin.top}" y2="${H - margin.bottom}" stroke="var(--sw-grid)" />`).join("")}
+      ${gridY.map(y => `<line x1="${margin.left}" x2="${W - margin.right}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--sw-grid)" />`).join("")}
+      <line x1="${margin.left}" x2="${W - margin.right}" y1="${H - margin.bottom}" y2="${H - margin.bottom}" stroke="var(--sw-muted)" />
+      <line x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${H - margin.bottom}" stroke="var(--sw-muted)" />
+      ${gridX.map(x => `<text x="${sx(x)}" y="${H - 22}" text-anchor="middle" fill="var(--sw-muted)" font-size="13">1e${x}</text>`).join("")}
+      ${gridY.map(y => `<text x="${margin.left - 10}" y="${sy(y) + 4}" text-anchor="end" fill="var(--sw-muted)" font-size="12">${y.toFixed(3)}</text>`).join("")}
+      <text x="${W / 2}" y="${H - 6}" text-anchor="middle" fill="var(--sw-muted)" font-size="13">数据规模 D（log10）</text>
+      <text x="18" y="${H / 2}" text-anchor="middle" transform="rotate(-90 18 ${H / 2})" fill="var(--sw-muted)" font-size="13">预测损失</text>
+      <path d="${linePath(trueYs)}" fill="none" stroke="var(--sw-true)" stroke-width="2.4" stroke-dasharray="6 6" />
+      <path d="${linePath(fitYs)}" fill="none" stroke="var(--sw-fit)" stroke-width="3" />
+      ${observed.map((y, i) => `<circle cx="${sx(xs[i])}" cy="${sy(y)}" r="4" fill="var(--sw-point)" stroke="var(--sw-bg)" stroke-width="1.5" />`).join("")}
+      <g transform="translate(${W - 255} 34)">
+        <rect width="225" height="72" rx="8" fill="var(--sw-bg)" stroke="var(--sw-border)" />
+        <line x1="14" x2="52" y1="22" y2="22" stroke="var(--sw-true)" stroke-width="2.4" stroke-dasharray="6 6" />
+        <text x="62" y="26" fill="var(--sw-muted)" font-size="13">真实函数</text>
+        <line x1="14" x2="52" y1="48" y2="48" stroke="var(--sw-fit)" stroke-width="3" />
+        <text x="62" y="52" fill="var(--sw-muted)" font-size="13">拟合外推</text>
+      </g>
+    `;
+
+    const nExp = fit.b / (fit.a + fit.b);
+    const dExp = fit.a / (fit.a + fit.b);
+    precisionLabel.textContent = `${digits} 位小数`;
+    noiseLabel.textContent = (noiseLevel * 0.001).toFixed(3);
+    regionLabel.textContent = regionText[region.value];
+    readout.innerHTML = `
+      <strong>当前拟合结果</strong><br>
+      <code>alpha = ${fit.a.toFixed(4)}</code><br>
+      <code>beta = ${fit.b.toFixed(4)}</code><br>
+      <code>N_opt ∝ C^${nExp.toFixed(4)}</code><br>
+      <code>D_opt ∝ C^${dExp.toFixed(4)}</code><br><br>
+      真实函数对应的指数约为 <code>N_opt ∝ C^0.5126</code>、<code>D_opt ∝ C^0.4874</code>。微小的损失处理差异，在远距离外推时会显得很大。
+    `;
+  }
+
+  [precision, noise, region].forEach(el => {
+    el.addEventListener("input", draw);
+    el.addEventListener("change", draw);
+  });
+
+  draw();
+})();
+</script>
